@@ -1,32 +1,60 @@
-import os
-import sys
-from sqlalchemy import Column, ForeignKey, Integer, String
+
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from sqlalchemy.orm import relationship, declarative_base
-from sqlalchemy import create_engine
+
 from eralchemy2 import render_er
+import datetime
 
 Base = declarative_base()
 
-class Person(Base):
-    __tablename__ = 'person'
-    # Here we define columns for the table person
-    # Notice that each column is also a normal Python instance attribute.
+class Planet(Base):
+    __tablename__ = 'planet'
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
+    name = Column(String(50), nullable=False)
+    description = Column(String(500), nullable=True)
+    planet_pic = Column(String(512), nullable=True)
 
-class Address(Base):
-    __tablename__ = 'address'
-    # Here we define columns for the table address.
-    # Notice that each column is also a normal Python instance attribute.
+class Character(Base):
+    __tablename__ = 'character'
     id = Column(Integer, primary_key=True)
-    street_name = Column(String(250))
-    street_number = Column(String(250))
-    post_code = Column(String(250), nullable=False)
-    person_id = Column(Integer, ForeignKey('person.id'))
-    person = relationship(Person)
+    name = Column(String(50), nullable=False)
+    description = Column(String(500), nullable=True)
+    character_pic = Column(String(512), nullable=True)
+   
+
+class FavoriteLike(Base):
+    __tablename__ = 'favorite_like'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    character_id = Column(Integer, ForeignKey("character.id"))
+    planet_id = Column(Integer, ForeignKey("planet.id"))
+
+class LogIn(Base):
+    __tablename__ = 'log_in'
+    id = Column(Integer, primary_key=True)
+    datetime = Column(DateTime, default=datetime.datetime.now())
+    success = Column(Boolean, default=False)
+    user_id = Column(Integer, ForeignKey("user.id"))
+  
+
+class Register(Base):
+    __tablename__ = 'register'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    username = Column(String(50),unique=True)
+    email = Column(String(250), unique=True)
+    password = Column(String(50), nullable=False)
+   
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    register_id = Column(Integer, ForeignKey("register.id"))
 
     def to_dict(self):
         return {}
+
+
 
 ## Draw from SQLAlchemy base
 render_er(Base, 'diagram.png')
